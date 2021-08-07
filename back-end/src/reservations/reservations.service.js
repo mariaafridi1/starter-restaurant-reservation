@@ -1,8 +1,21 @@
-function create(reservation) {
-  return knex(tableName)
-    .insert(reservation)
-    .returning("*")
-    .then((createdRecords) => createdRecords[0]);
+const knex = require("../db/connection");
+
+// *OPTION ONE
+function list(reservation_date) {
+  return knex("reservations")
+    .select("*")
+    .where({ reservation_date })
+    .orderBy("reservation_time", "asc");
+  console.log(reservation_date);
 }
 
-module.exports = create;
+function create(reservation_id) {
+  return knex("reservations")
+    .insert(reservation)
+    .returning("*")
+    .then((newReservation) => newReservation[0]);
+}
+
+function read() {}
+
+module.exports = { list, create, read };
