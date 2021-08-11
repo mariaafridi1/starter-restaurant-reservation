@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import validate from "./validate";
 import ValidateErrors from "./ValidationErrors";
 
@@ -14,13 +14,13 @@ const ReservationForm = ({
     people: "",
   },
 }) => {
-  const [reservation, setReservation] = useState(initalState);
+  const [reservation, setReservation] = useState(initialState);
   const [errors, setErrors] = useState([]);
 
   function changeHandler({ target: { last_name, value } }) {
     setReservation((previousReservation) => ({
       ...previousReservation,
-      [name]: Number(value),
+      [last_name]: Number(value),
     }));
   }
 
@@ -41,7 +41,7 @@ const ReservationForm = ({
       <fieldset>
         <div className="row mb-3">
           <div className="col-6 form-group">
-            <label clasnName="form-label" htmlFor="first_name">
+            <label className="form-label" htmlFor="first_name">
               First Name:
             </label>
             <input
@@ -50,7 +50,7 @@ const ReservationForm = ({
               name="first_name"
               type="text"
               value={reservation.first_name}
-              onChange={a}
+              onChange={changeHandler}
               required
             />
           </div>
@@ -66,7 +66,7 @@ const ReservationForm = ({
               name="last_name"
               type="text"
               value={reservation.last_name}
-              onChange={a}
+              onChange={changeHandler}
               required
             />
           </div>
@@ -83,7 +83,7 @@ const ReservationForm = ({
               type="tel"
               placeholder="XXX-XXX-XXXX"
               value={reservation.mobile_number}
-              onChange={a}
+              onChange={changeHandler}
               required
             />
           </div>
@@ -99,7 +99,7 @@ const ReservationForm = ({
               name="reservation_date"
               type="date"
               value={reservation.reservation_date}
-              onChange={a}
+              onChange={changeHandler}
               required
             />
           </div>
@@ -116,7 +116,7 @@ const ReservationForm = ({
               type="time"
               placeholder="HH:MM"
               value={reservation.reservation_time}
-              onChange={a}
+              onChange={changeHandler}
               required
             />
           </div>

@@ -5,7 +5,7 @@ function convertTimeToMin(time) {
   return result[0] * 60 + result[1];
 }
 
-function isFutureDate({ reservatioin_date, reservation_time }) {
+function isFutureDate({ reservation_date, reservation_time }) {
   if (new Date(`${reservation_date}T${reservation_time}`) < new Date()) {
     return new Error("Reservation date/time must be a future date");
   }
@@ -18,7 +18,7 @@ function isOpenOnDay({ reservation_date }) {
   }
 }
 function isOpenAtTime({ reservation_time }) {
-  const reservationTime = convertISOTimeToMinutes(reservation_time);
+  const reservationTime = convertTimeToMin(reservation_time);
   if (reservationTime < 630 || reservationTime > 1290) {
     return new Error("Please select a time between 10;30 and 21:30");
   }

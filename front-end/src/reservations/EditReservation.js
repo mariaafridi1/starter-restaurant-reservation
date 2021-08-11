@@ -37,7 +37,7 @@ const EditReservation = () => {
   function cancelHandler() {
     history.goBack();
   }
-  const child = reservations.reservation_id ? (
+  const child = reservation.reservation_id ? (
     <ReservationForm
       initalState={reservation}
       submitHandler={submitHandler}
