@@ -1,60 +1,41 @@
 const knex = require("../db/connection");
+const tableName = "reservations";
 
-function list() {
-  return knex("reservations").select("*").whereNot({ status: "finished" });
+function create(newReservation) {
+  return knex(tableName).insert(newReservation).returning("*");
 }
 
-function listByDate(reservation_date) {
-  return knex("reservations")
-    .select("*")
+async function list(reservation_date) {
+  return knex(tableName)
     .where({ reservation_date })
-    .whereNot({ status: "finished" })
+    .whereNot("status", ["finished", "cancelled"])
     .orderBy("reservation_time");
 }
 
-function create(newReservation) {
-  return knex("reservations")
-    .insert(newReservation)
-    .returning("*")
-    .then((newReservation) => newReservation[0]);
-}
-
-function listByPhone(mobile_number) {
-  return knex("reservations")
+function search(mobile_number) {
+  return knex(tableName)
     .whereRaw(
-      "translate(mobile_number, '() -', '') like ?",
+      "translate(mobile_number, '() -', '') line ?",
       `%${mobile_number.replace(/\D/g, "")}%`
     )
-    .returning("*")
     .orderBy("reservation_date");
 }
 
-function read(reservation_id) {
-  return knex("reservations").select("*").where({ reservation_id });
+async function read(reservation_id) {
+  return knex(tableName).where({ reservation_id }).first();
 }
 
-function updateReservationStatus(status, reservation_id) {
-  return knex("reservations")
-    .where({ reservation_id })
-    .update({ status: status })
-    .returning("*")
-    .then((result) => result[0]);
-}
-
-function update(updatedReservation, reservation_id) {
-  return knex("reservations")
-    .where({ reservation_id })
-    .update({ ...updatedReservation })
-    .returning("*")
-    .then((result) => result[0]);
+async function update(updatedReservation) {
+  return knex(tableName)
+    .where({ reservation_id: updatedReservation.reservation_id })
+    .update(updatedReservation, "*")
+    .then(() => read(updatedReservation.reservation_id));
 }
 
 module.exports = {
-  list,
-  listByDate,
-  listByPhone,
   create,
+  list,
+  search,
   read,
-  updateReservationStatus,
   update,
 };
