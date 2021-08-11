@@ -9,7 +9,7 @@ const SearchByMobileNum = () => {
   const [displayResults, setDisplayResults] = useState(false);
 
   const formChangeHandler = ({ target }) => {
-    setMobile_number(target.value);
+    setMobileNumber(target.value);
   };
 
   async function listResults() {
@@ -18,7 +18,7 @@ const SearchByMobileNum = () => {
       { mobile_number: mobile_number },
       abortController.signal
     )
-      .then(setResulsts)
+      .then(setResults)
       .catch(setReservationError);
     return () => abortController.abort();
   }
@@ -56,7 +56,7 @@ const SearchByMobileNum = () => {
         results.length ? (
           <ReservationsDisplay
             reservations={results}
-            reservationsError={reservationsError}
+            reservationError={reservationError}
           />
         ) : (
           <h4>No reservations found</h4>

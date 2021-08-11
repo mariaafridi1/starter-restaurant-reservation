@@ -2,7 +2,7 @@ import React from "react";
 import { useHistory } from "react-router-dom";
 import { previous, today, next } from "../utils/date-time";
 import ReservationsDisplay from "../reservations/ReservationsDisplay";
-import TablesDisplay from "../tables/TablesDisplay";
+import TableDisplay from "../tables/TableDisplay";
 
 /**
  * Defines the dashboard page.
@@ -52,7 +52,7 @@ function Dashboard({
 
       <h4>Tables</h4>
 
-      <TablesDisplay tables={tables} tablesError={tablesError} />
+      <TableDisplay tables={tables} tablesError={tablesError} />
     </main>
   );
 }
