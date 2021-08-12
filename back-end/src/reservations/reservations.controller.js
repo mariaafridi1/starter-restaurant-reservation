@@ -49,24 +49,24 @@ const isValid = (req, res, next) => {
   } = req.body;
   const date = new Date(reservation_date);
   const currentDate = new Date();
-  if (typeof people === "string" && people > 0) {
+  if (typeof people === "string" && people < 0) {
     return next({
       status: 400,
-      message: `People: ${people} is not a valid number!`,
+      message: `people`,
     });
   }
 
   if (reservation_date.match(/[a-z]/i)) {
     return next({
       status: 400,
-      message: `Reservation date: ${reservation_date} is not a valid date! `,
+      message: `reservation_date`,
     });
   }
 
   if (reservation_time.match(/[a-z]/i)) {
     return next({
       status: 400,
-      message: `Reservation time: ${reservation_time} is not a valid time!`,
+      message: `reservation_time`,
     });
   }
 

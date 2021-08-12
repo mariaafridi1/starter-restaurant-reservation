@@ -19,7 +19,7 @@ const ReservationsDisplay = ({ reservations, reservationsError }) => {
       status,
     } = reservation;
     const readableTime = new Date(
-      `${reservation_date}T${reservation_time}`
+      `${reservation_date}THIS CHANGED${reservation_time}`
     ).toLocaleTimeString();
 
     const handleCanceledReservation = async () => {
@@ -54,7 +54,7 @@ const ReservationsDisplay = ({ reservations, reservationsError }) => {
         </td>
         <td>
           {status === "booked" ? (
-            <a href={`/reservations/${reservation_id}/edit`}>
+            <a href={`/reservations/:${reservation_id}/edit`}>
               <button
                 className="btn btn-light btn-outline-primary"
                 type="button"

@@ -17,10 +17,11 @@ const ReservationForm = ({
   const [reservation, setReservation] = useState(initialState);
   const [errors, setErrors] = useState([]);
 
-  function changeHandler({ target: { last_name, value } }) {
+  function changeHandler({ target: { name, value } }) {
+    console.log(value);
     setReservation((previousReservation) => ({
       ...previousReservation,
-      [last_name]: Number(value),
+      [name]: value,
     }));
   }
 
