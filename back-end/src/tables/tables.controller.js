@@ -1,5 +1,5 @@
-const TablesService = require("./tables.controller");
-const ReservationsService = require("../reservations/reservations.service");
+const tablesService = require("./tables.service");
+const reservationsService = require("../reservations/reservations.service");
 const asyncErrorBoundary = require("../errors/asyncErrorBoundary");
 const hasProperties = require("../errors/hasProperties");
 
@@ -18,7 +18,7 @@ function hasOnlyValidProperties(req, res, next) {
   const { data = {} } = req.asyncErrorBoundary;
 
   const invalidFields = Object.keys(data).filter((field) => {
-    !VALID_FIELDS.inclludes(field);
+    !VALID_FIELDS.includes(field);
   });
   if (invalidFields.length) {
     return next({
@@ -51,7 +51,7 @@ function validCreate(req, res, next) {
 }
 
 async function tableExists(req, res, next) {
-  const table = await TablesService.read(req.params.table_id);
+  const table = await tablesService.read(req.params.table_id);
   if (table) {
     res.locals.table = table;
     return next();
@@ -61,7 +61,6 @@ async function tableExists(req, res, next) {
     message: `Table ${req.params.table_id} cannot be found.`,
   });
 }
-
 
 //* MIDDLEWARE
 
@@ -87,7 +86,7 @@ function reservationIdExists(req, res, next) {
 }
 
 async function reservationExists(req, res, next) {
-  const reservation = await ReservationsService.read(
+  const reservation = await reservationsService.read(
     req.body.data.reservation_id
   );
   if (reservation) {
@@ -128,11 +127,15 @@ function isTableOccupied(req, res, next) {
 }
 //* CRUD
 async function create(req, res) {
-  const newTable = await TablesService.create(req.body.data);
+  const newTable = await tablesService.create(req.body.data);
 
   res.status(201).json({
     data: newTable[0],
   });
+}
+
+async function list(req, res) {
+  res.json({ data: await tablesService.list() });
 }
 
 function read(req, res) {
@@ -147,8 +150,8 @@ async function update(req, res) {
     ...res.locals.reservation,
     status: "seated",
   };
-  const tableInfo = await TablesService.update(updatedTable);
-  const resoInto = ReservationsService.update(updatedReservation);
+  const tableInfo = await tablesService.update(updatedTable);
+  const resoInto = reservationsService.update(updatedReservation);
   res.json({ tableInfo });
   res.json({ resoInfo });
 }
@@ -159,11 +162,11 @@ async function destroy(req, res) {
     reservation_id: null,
   };
 
-  const seatedReservation = await ReservationsService.read(
+  const seatedReservation = await reservationsService.read(
     res.locals.table.reservation_id
   );
-  const tableInfo = TablesService.update(updatedTable);
-  const resoInfo = ReservationsService.update({
+  const tableInfo = tablesService.update(updatedTable);
+  const resoInfo = reservationsService.update({
     ...seatedReservation,
     status: "finished",
   });

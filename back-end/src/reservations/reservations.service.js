@@ -5,11 +5,26 @@ function create(newReservation) {
   return knex(tableName).insert(newReservation).returning("*");
 }
 
-async function list(reservation_date) {
-  return knex(tableName)
-    .where({ reservation_date })
-    .whereNot("status", ["finished", "cancelled"])
-    .orderBy("reservation_time");
+// async function list(reservation_date) {
+//   return knex(tableName)
+//     .where({ reservation_date })
+//     .whereNot("status", ["finished", "cancelled"])
+//     .orderBy("reservation_time");
+// }
+function list(reservation_date) {
+  if (!reservation_date) {
+    return knex(tableName)
+      .select("*")
+      .orderBy("reservation_date", "asc")
+      .orderBy("reservation_time", "asc");
+  } else {
+    return knex(tableName)
+      .select("*")
+      .orderBy("reservation_time", "asc")
+      .where("reservation_date", reservation_date)
+      .whereNot("status", "finished")
+      .whereNot("status", "cancelled");
+  }
 }
 
 function search(mobile_number) {

@@ -20,7 +20,7 @@ const VALID_FIELDS = [
 ];
 
 function hasOnlyValidProperties(req, res, next) {
-  const { data = {} } = req.asyncErrorBoundary;
+  const { data = {} } = req.body;
 
   const invalidFields = Object.keys(data).filter(
     (field) => !VALID_FIELDS.includes(field)
@@ -156,19 +156,32 @@ async function create(req, res) {
   });
 }
 
+// async function list(req, res) {
+//   const date = req.query.date;
+//   const mobile_data = req.query.mobile_number;
+//   if (date) {
+//     res.json({
+//       data: await service.list(date),
+//     });
+//   } else if (mobile_number) {
+//     res.json({
+//       data: await service.search(mobile_number),
+//     });
+//   }
+// }
+
 async function list(req, res) {
-  const date = req.query.date;
-  const mobile_data = req.query.mobile_number;
-  if (date) {
-    res.json({
-      data: await service.list(date),
-    });
-  } else if (mobile_number) {
-    res.json({
-      data: await service.search(mobile_number),
-    });
+  let data;
+
+  if (req.query.date) {
+    data = await service.list(req.query.date);
+  } else if (req.query.mobile_number) {
+    data = await service.search(req.query.mobile_number);
   }
+
+  res.json({ data });
 }
+
 function read(req, res) {
   res.json({ data: res.locals.reservation });
 }
@@ -187,11 +200,11 @@ module.exports = {
     asyncErrorBoundary(create),
   ],
   list: asyncErrorBoundary(list),
-  read: [asyncErrorBoundary(reservations), read],
+  read: [asyncErrorBoundary(reservationExists), read],
   update: [
     asyncErrorBoundary(reservationExists),
     hasOnlyValidProperties,
-    hasRequiredProperties,
+    //hasRequiredProperties,
     isValid,
     asyncErrorBoundary(update),
   ],
