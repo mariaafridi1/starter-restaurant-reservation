@@ -6,7 +6,8 @@ import ErrorAlert from "../layout/ErrorAlert";
 const TableDisplay = ({ tables, tablesError }) => {
   const history = useHistory();
   const abortController = new AbortController();
-
+  //TODO I CANT GET THIS FUNCTION TO WORK
+  //! CONSOLE LOG IS ON LINE 49
   const allTables = tables.map((table) => {
     const { table_id, table_name, capacity, reservation_id } = table;
     const finishedReservationHandler = async (e) => {
@@ -16,6 +17,7 @@ const TableDisplay = ({ tables, tablesError }) => {
       history.go(0);
       return () => abortController.abort();
     };
+
     return (
       <tr key={table_id}>
         <td>{table_id}</td>
@@ -44,6 +46,7 @@ const TableDisplay = ({ tables, tablesError }) => {
       </tr>
     );
   });
+  console.log("THis is all the tables", allTables);
   return (
     <div>
       <ErrorAlert error={tablesError} />
