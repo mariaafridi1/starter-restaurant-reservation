@@ -52,7 +52,7 @@ const TableDisplay = ({ tables, tablesError }) => {
     <div>
       <ErrorAlert error={tablesError} />
       <table>
-        <thead thead>
+        <thead>
           <tr>
             <th scope="col">ID</th>
             <th scope="col">Table Name</th>

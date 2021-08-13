@@ -1,58 +1,300 @@
 import React, { useEffect, useState } from "react";
+import { today } from "../utils/date-time";
 import { useHistory, useParams } from "react-router-dom";
-import { readReservation, updateReservation } from "../utils/api";
-import { formatAsDate } from "../utils/date-time";
 import ErrorAlert from "../layout/ErrorAlert";
-import ReservationForm from "./ReservationForm";
+import { readReservation, updateReservation } from "../utils/api";
 
-const EditReservation = () => {
+function EditReservation() {
+  const { reservation_id } = useParams();
+  console.log(reservation_id, `INSIDE EDIT RESERVATION`);
   const history = useHistory();
-  const { reservation_id } = useParams;
-  const [reservation, setReservation] = useState({});
-  const [reservationError, setReservationError] = useState(null);
 
-  useEffect(() => {
-    const abortController = new AbortController();
-    setReservationError(null);
-    readReservation(reservation_id, abortController.signal)
-      .then(setReservation)
-      .catch(setReservationError);
-
-    return () => abortController.abort();
-  }, [reservation_id]);
-
-  const submitHandler = (reservation) => {
-    const abortController = new AbortController();
-    setReservationError(null);
-    updateReservation(reservation, abortController.signal)
-      .then((updatedReservation) => {
-        history.push(
-          `/dashbord?date=${formatAsDate(updatedReservation.reservation_date)}`
-        );
-      })
-      .catch(setReservationError);
-    return () => abortController.abort();
+  const initialFormState = {
+    first_name: "",
+    last_name: "",
+    mobile_number: "",
+    reservation_date: today(),
+    reservation_time: "",
+    people: 1,
   };
 
-  function cancelHandler() {
-    history.goBack();
+  const [formData, setFormData] = useState({ ...initialFormState });
+
+  const [errorMessages, setErrorMessages] = useState([]);
+
+  useEffect(loadReservationFormData, [reservation_id]);
+
+  function loadReservationFormData() {
+    const abortController = new AbortController();
+    readReservation(reservation_id, abortController.signal).then(setFormData);
+    return () => abortController.abort();
   }
-  const child = reservation.reservation_id ? (
-    <ReservationForm
-      initalState={reservation}
-      submitHandler={submitHandler}
-      cancelHandler={cancelHandler}
-    />
-  ) : (
-    <p>Loading...</p>
-  );
+
+  // format the reservation date
+  const formatAsDateTimeInstance = () => {
+    let dateParts = formData.reservation_date.split("-");
+
+    dateParts = dateParts.map((part) => parseInt(part));
+
+    let timeParts = formData.reservation_time.split(":");
+
+    timeParts = timeParts.map((part) => parseInt(part, 10));
+
+    return new Date(
+      dateParts[0],
+      dateParts[1] - 1,
+      dateParts[2],
+      timeParts[0],
+      timeParts[1],
+      0,
+      0
+    );
+  };
+
+  // VALIDATION
+
+  const reservationDuringValidHours = () => {
+    const time = formData.reservation_time;
+
+    const hrs = parseInt(time.split(":")[0], 10);
+    const mins = parseInt(time.split(":")[1], 10);
+
+    if (
+      hrs < 10 ||
+      (hrs === 10 && mins < 30) ||
+      hrs > 21 ||
+      (hrs === 21 && mins > 30)
+    ) {
+      return false;
+    }
+
+    return true;
+  };
+
+  const reservationDateNotTuesday = () => {
+    const date = formatAsDateTimeInstance();
+
+    if (date.getDay() === 2) return false;
+
+    return true;
+  };
+
+  const reservationDateNotInPast = () => {
+    const date = formatAsDateTimeInstance().getTime();
+
+    const today = new Date().getTime();
+
+    if (date < today) return false;
+
+    return true;
+  };
+
+  const validateForm = () => {
+    const errorArr = [];
+
+    if (!reservationDateNotTuesday()) {
+      errorArr.push({
+        message:
+          "The restaurant is closed on Tuesdays, please choose another date!",
+      });
+    }
+    if (!reservationDateNotInPast()) {
+      errorArr.push({
+        message:
+          "Cannot choose a reservation date in the past. Only future reservations are allowed.",
+      });
+    }
+
+    if (!reservationDuringValidHours()) {
+      errorArr.push({
+        message: "Must make reservation between 10:30 AM and 9:30 PM.",
+      });
+    }
+
+    return errorArr;
+  };
+
+  // EVENT HANDLERS
+  const handleChange = ({ target }) => {
+    const value =
+      target.type === "number" ? Number(target.value) : target.value;
+    setFormData({
+      ...formData,
+      [target.name]: value,
+    });
+  };
+
+  //!OPTION ONE ORIGINAL - NOT WORKING
+  // const handleFormSubmit = (event) => {
+  //   event.preventDefault();
+
+  //   const errors = validateForm();
+
+  //   setErrorMessages(errors);
+
+  //   if (errors.length === 0) {
+  //     updateReservation(reservation_id, formData)
+  //       .then(() =>
+  //         history.push(`/dashboard/?date=${formData.reservation_date}`)
+  //       )
+  //       .catch((err) => {
+  //         console.error(err);
+  //       });
+  //   }
+  // };
+
+  //! OPTION TWO -
+  const handleFormSubmit = (event) => {
+    event.preventDefault();
+
+    const errors = validateForm();
+
+    setErrorMessages(errors);
+
+    if (errors.length === 0) {
+      const abortController = new AbortController();
+      console.log(formData, `!!!!!!!!!!!!!!!!`);
+      updateReservation({ reservation_id, ...formData }, abortController.signal)
+        .then(() =>
+          history.push(`/dashboard/?date=${formData.reservation_date}`)
+        )
+        .catch((err) => {
+          console.error(err);
+        });
+    }
+  };
+
+  //! OPTION THREE -
+  // export async function updateReservation(reservation_id, data) {
+  //   const url = new URL(`${API_BASE_URL}/reservations/${reservation_id}`);
+
+  //   return await fetchJson(
+  //     url,
+  //     {
+  //       headers,
+  //       method: "PUT",
+  //       body: JSON.stringify({ data }),
+  //     },
+  //     []
+  //   );
+  // }
+
+  const handleCancelButton = () => {
+    history.goBack();
+  };
+
   return (
-    <main>
-      <h1>Edit Existing Reservation #{reservation.reservation_id}</h1>
-      <ErrorAlert error={reservationError} />
-      {child}
-    </main>
+    <div className="container-fluid py-4">
+      <h1>Edit a reservation</h1>
+      {errorMessages.map((error, index) => (
+        <ErrorAlert key={index} error={error} />
+      ))}
+      <form onSubmit={handleFormSubmit}>
+        <div className="form-group">
+          <label htmlFor="first_name">
+            First Name
+            <input
+              name="first_name"
+              type="text"
+              id="first_name_edit"
+              value={formData.first_name}
+              onChange={handleChange}
+              placeholder="First Name"
+              required
+              className="form-control"
+            ></input>
+          </label>
+        </div>
+        <div className="form-group">
+          <label htmlFor="last_name">
+            Last Name
+            <input
+              name="last_name"
+              type="text"
+              id="last_name_edit"
+              value={formData.last_name}
+              onChange={handleChange}
+              placeholder="Last Name"
+              required
+              className="form-control"
+            ></input>
+          </label>
+        </div>
+        <div className="form-group">
+          <label htmlFor="mobile_number">
+            Mobile Number
+            <input
+              name="mobile_number"
+              type="tel"
+              id="mobile_number_edit"
+              value={formData.mobile_number}
+              onChange={handleChange}
+              placeholder="Mobile Number"
+              required
+              className="form-control"
+            ></input>
+          </label>
+        </div>
+        <div className="form-group">
+          <label htmlFor="reservation_date">
+            Reservation Date
+            <input
+              name="reservation_date"
+              type="date"
+              id="reservation_date_edit"
+              value={formData.reservation_date}
+              onChange={handleChange}
+              placeholder="Reservation Date"
+              required
+              className="form-control"
+            ></input>
+          </label>
+        </div>
+        <div className="form-group">
+          <label htmlFor="reservation_time">
+            Reservation Time
+            <input
+              name="reservation_time"
+              type="time"
+              id="reservation_time_edit"
+              value={formData.reservation_time}
+              onChange={handleChange}
+              placeholder="Reservation Time"
+              required
+              className="form-control"
+            ></input>
+          </label>
+        </div>
+        <div className="form-group">
+          <label htmlFor="people">
+            Party Size
+            <input
+              name="people"
+              type="number"
+              id="people_edit"
+              value={formData.people}
+              onChange={handleChange}
+              placeholder="People"
+              required
+              className="form-control"
+            ></input>
+          </label>
+        </div>
+        <div className="controls">
+          <button className="btn btn-info mr-2" type="submit">
+            Submit
+          </button>
+          <button
+            className="btn btn-secondary"
+            type="button"
+            onClick={handleCancelButton}
+          >
+            Cancel
+          </button>
+        </div>
+      </form>
+    </div>
   );
-};
+}
 
 export default EditReservation;

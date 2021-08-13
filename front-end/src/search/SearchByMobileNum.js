@@ -2,14 +2,14 @@ import React, { useState } from "react";
 import ReservationsDisplay from "../reservations/ReservationsDisplay";
 import { listReservations } from "../utils/api";
 
-const SearchByMobileNum = () => {
-  const [mobile_number, setMobileNumber] = useState(null);
+export default function SearchByMobileNumber() {
+  const [mobile_number, setMobile_number] = useState(null);
   const [results, setResults] = useState([]);
-  const [reservationError, setReservationError] = useState(null);
+  const [reservationsError, setReservationsError] = useState(null);
   const [displayResults, setDisplayResults] = useState(false);
 
   const formChangeHandler = ({ target }) => {
-    setMobileNumber(target.value);
+    setMobile_number(target.value);
   };
 
   async function listResults() {
@@ -19,18 +19,19 @@ const SearchByMobileNum = () => {
       abortController.signal
     )
       .then(setResults)
-      .catch(setReservationError);
+      .catch(setReservationsError);
     return () => abortController.abort();
   }
-  const submitHandler = async (e) => {
-    e.preventDefault();
+
+  const submitHandler = async (event) => {
+    event.preventDefault();
     await listResults();
     setDisplayResults(true);
   };
 
   return (
     <main>
-      <h1>SEARCH</h1>
+      <h1>Search</h1>
       <form onSubmit={submitHandler}>
         <div className="row mt-3">
           <div className="col-6 form-group">
@@ -39,9 +40,9 @@ const SearchByMobileNum = () => {
               id="mobile_number"
               name="mobile_number"
               type="tel"
-              calue={mobile_number}
+              value={mobile_number}
               onChange={formChangeHandler}
-              placeholder="Enter your phone number"
+              placeholder="Enter a customer's phone number"
               required
             />
           </div>
@@ -56,7 +57,7 @@ const SearchByMobileNum = () => {
         results.length ? (
           <ReservationsDisplay
             reservations={results}
-            reservationError={reservationError}
+            reservationsError={reservationsError}
           />
         ) : (
           <h4>No reservations found</h4>
@@ -64,6 +65,4 @@ const SearchByMobileNum = () => {
       ) : null}
     </main>
   );
-};
-
-export default SearchByMobileNum;
+}

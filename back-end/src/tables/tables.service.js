@@ -2,7 +2,10 @@ const knex = require("../db/connection");
 const tableName = "tables";
 
 function create(newTable) {
-  return knex(tableName).insert(newTable).returning("*");
+  return knex(tableName)
+    .insert(newTable)
+    .returning("*")
+    .then((createdRecords) => createdRecords[0]);
 }
 
 async function list() {

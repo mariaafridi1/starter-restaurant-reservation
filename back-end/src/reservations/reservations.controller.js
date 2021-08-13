@@ -3,6 +3,7 @@ const asyncErrorBoundary = require("../errors/asyncErrorBoundary");
 const hasProperties = require("../errors/hasProperties");
 const dayIsTues = require("../errors/dayIsTues");
 const withinOpenHours = require("../errors/withinOpenHours");
+const { formatReservationDate } = require("../utils/format-reservation-date");
 
 //*  PIPELINE
 
@@ -102,11 +103,16 @@ const isValid = (req, res, next) => {
 
 //* MIDDLEWARE
 async function reservationExists(req, res, next) {
+  console.log(req.params.reservation_id, `reservation_id`);
   const reservation = await service.read(req.params.reservation_id);
+  console.log(`RESERVATION INSIDE FUNCTION`);
   if (reservation) {
+    console.log(`INSIDE IF STATEMENT`);
     res.locals.reservation = reservation;
+    console.log(`AFTER RES.LOCALS`);
     return next();
   }
+  console.log(`AFTER LINE 112`);
   next({
     status: 404,
     message: `Reservation ${req.params.reservation_id} cannot be found.`,
@@ -114,9 +120,11 @@ async function reservationExists(req, res, next) {
 }
 
 const validStatusUpdate = (req, res, next) => {
+  console.log(`START OF VALIDSTATUSUPDATE FUNCTION`);
   const {
     data: { status },
   } = req.body;
+  console.log(res.locals, `RES.LOCALS INSIDE FUNCTION`);
   const { reservation } = res.locals;
 
   if (reservation.status === "finished") {
@@ -138,11 +146,21 @@ const validStatusUpdate = (req, res, next) => {
 };
 
 async function updateStatus(req, res) {
+  console.log(res.locals.reservation, `res.locals.reservation`);
   const updatedReservation = {
     ...res.locals.reservation,
     status: req.body.data.status,
   };
-  const data = await service.update(updatedReservation);
+  const data = await service.update(
+    res.locals.reservation.reservation_id,
+    updatedReservation
+  );
+  console.log(data, `last test looking for data`);
+  //res.setHeader("Location", "http://localhost:5000/reservations?date=");
+  res.redirect(
+    "http://localhost:5000/dashboard?date=" +
+      formatReservationDate(res.locals.reservation.reservation_date)
+  );
   res.json({ data });
 }
 
@@ -152,7 +170,7 @@ async function create(req, res) {
   const newReservation = await service.create(req.body.data);
 
   res.status(201).json({
-    data: newReservation[0],
+    data: newReservation,
   });
 }
 
@@ -160,7 +178,7 @@ async function list(req, res) {
   const date = req.query.date;
   // //console.log(date);
   const mobile_number = req.query.mobile_number;
-  console.log(mobile_number);
+  // console.log(mobile_number, `THIS IS MOBILE NUMBER!!!!!!!`);
   if (date) {
     const data = await service.list(date);
     res.json({
@@ -191,7 +209,8 @@ function read(req, res) {
 
 async function update(req, res) {
   const updatedReservation = { ...req.body.data };
-  const data = await service.update(updatedReservation);
+  const { reservation_id } = req.params;
+  const data = await service.update(reservation_id, updatedReservation);
   res.json({ data });
 }
 
@@ -207,7 +226,7 @@ module.exports = {
   update: [
     asyncErrorBoundary(reservationExists),
     hasOnlyValidProperties,
-    //hasRequiredProperties,
+    hasRequiredProperties,
     isValid,
     asyncErrorBoundary(update),
   ],

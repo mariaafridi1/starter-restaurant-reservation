@@ -15,11 +15,10 @@ test("renders title", () => {
 
 //! *****************
 
-
 import React from "react";
 import { useHistory } from "react-router-dom";
-import ErrorAlert from "../layout/ErrorAlert";
-import { freeTable } from "../utils/api";
+import ErrorAlert from "./layout/ErrorAlert";
+import { freeTable } from "./utils/api";
 
 export default function TablesDisplay({ tables, tablesError }) {
   const history = useHistory();

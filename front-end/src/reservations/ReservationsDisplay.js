@@ -23,13 +23,14 @@ const ReservationsDisplay = ({ reservations, reservationsError }) => {
     ).toLocaleTimeString();
 
     const handleCanceledReservation = async () => {
-      await changeReservationStatus(
+      const result = await changeReservationStatus(
         reservation_id,
         "cancelled",
         abortController.signal
       );
+      console.log(result, `LAST TEST`);
       history.back();
-      return () => abortController.abort;
+      // return () => abortController.abort;
     };
     return (
       <tr key={reservation_id}>
@@ -54,7 +55,7 @@ const ReservationsDisplay = ({ reservations, reservationsError }) => {
         </td>
         <td>
           {status === "booked" ? (
-            <a href={`/reservations/:${reservation_id}/edit`}>
+            <a href={`/reservations/${reservation_id}/edit`}>
               <button
                 className="btn btn-light btn-outline-primary"
                 type="button"
@@ -69,12 +70,13 @@ const ReservationsDisplay = ({ reservations, reservationsError }) => {
             <button
               className="btn btn-light btn-outline-danger"
               type="button"
-              date-reservation-id-cancel={reservation_id}
+              data-reservation-id-cancel={reservation_id}
               onClick={() => {
                 const confirmation = window.confirm(
-                  `Do you want to cancel this reservation? This cannot be undone.`
+                  `"Do you want to cancel this reservation?"`
                 );
-                return confirmation ? handleCanceledReservation() : null;
+                if (confirmation) handleCanceledReservation();
+                // return confirmation ? await handleCanceledReservation() : null;
               }}
             >
               Cancel

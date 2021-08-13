@@ -1,5 +1,5 @@
 const puppeteer = require("puppeteer");
-const { setDefaultOptions } = require('expect-puppeteer');
+const { setDefaultOptions } = require("expect-puppeteer");
 const fs = require("fs");
 const fsPromises = fs.promises;
 
@@ -22,7 +22,7 @@ describe("US-01 - Create and list reservations - E2E", () => {
 
   beforeEach(async () => {
     page = await browser.newPage();
-    page.on("console", onPageConsole);
+    //page.on("console", onPageConsole);
     await page.setViewport({ width: 1920, height: 1080 });
     await page.goto(`${baseURL}/reservations/new`, { waitUntil: "load" });
   });

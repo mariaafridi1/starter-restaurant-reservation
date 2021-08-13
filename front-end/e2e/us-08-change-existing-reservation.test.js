@@ -1,5 +1,5 @@
 const puppeteer = require("puppeteer");
-const { setDefaultOptions } = require('expect-puppeteer');
+const { setDefaultOptions } = require("expect-puppeteer");
 const fs = require("fs");
 const fsPromises = fs.promises;
 
@@ -36,7 +36,7 @@ describe("US-08 - Change an existing reservation - E2E", () => {
     });
     page = await browser.newPage();
     await page.setViewport({ width: 1920, height: 1080 });
-    page.on("console", onPageConsole);
+    //page.on("console", onPageConsole);
   });
 
   afterAll(async () => {
@@ -61,8 +61,7 @@ describe("US-08 - Change an existing reservation - E2E", () => {
         await page.waitForSelector(hrefSelector);
 
         await page.screenshot({
-          path:
-            ".screenshots/us-08-dashboard-edit-click-after-no-change-expected.png",
+          path: ".screenshots/us-08-dashboard-edit-click-after-no-change-expected.png",
           fullPage: true,
         });
 
@@ -96,10 +95,12 @@ describe("US-08 - Change an existing reservation - E2E", () => {
         await cancelButton.click();
 
         await page.waitForResponse((response) => {
+          console.log(response.url(), `TEST RESPONSE!!!!!!!!`);
           return response.url().includes("/reservations?date=");
         });
 
         await page.waitForTimeout(500);
+        console.log("POST TIME OUT!!!!!!!!!!");
 
         expect(await page.$(cancelButtonSelector)).toBeNull();
       });

@@ -54,7 +54,7 @@ function validCreate(req, res, next) {
 async function create(req, res) {
   const newTable = await tablesService.create(req.body.data);
   res.status(201).json({
-    dagta: newTable[0],
+    data: newTable,
   });
 }
 
@@ -114,7 +114,8 @@ async function reservationExists(req, res, next) {
 }
 
 function validUpdate(req, res, next) {
-  const { table, reservations } = res.locals;
+  console.log(res.locals, `INSIDE FUNCTION VALIDUPDATE`);
+  const { table, reservation } = res.locals;
   if (table.reservation_id) {
     return next({
       status: 400,
@@ -127,27 +128,37 @@ function validUpdate(req, res, next) {
       message: `Reservation is already seated`,
     });
   }
-  if (table.capacity < reservations.people) {
+  if (table.capacity < reservation.people) {
     return next({
       status: 400,
-      message: `Capacity not large enough to accommodate party size.`,
+      message: `capacity`,
     });
   }
   next();
 }
 async function update(req, res) {
+  console.log(`WE GOT HERE`);
   const updatedTable = {
     ...res.locals.table,
     reservation_id: res.locals.reservation.reservation_id,
   };
+  console.log(`MIDDLE OF FUNCTION`);
   const updatedReservation = {
     ...res.locals.reservation,
     status: "seated",
   };
+  console.log(`LINE 150!!!!!!!`);
   const tableInfo = await tablesService.update(updatedTable);
-  const resoInfo = await reservationsService.update(updatedReservation);
+  console.log(`LINE 152`, updatedReservation);
+  const resoInfo = await reservationsService.update(
+    res.locals.reservation.reservation_id,
+    updatedReservation
+  );
+  console.log(`LINE 154`);
   res.json({ tableInfo });
-  res.json({ resoInto });
+  console.log(`LINE 156`);
+  // res.json({ resoInto });
+  console.log(`LINE 158`);
 }
 
 function isTableOccupied(req, res, next) {
@@ -170,12 +181,12 @@ async function destroy(req, res) {
     res.locals.table.reservation_id
   );
   const tableInfo = tablesService.update(updatedTable);
-  const resoInfo = reservationsService.update({
+  const resoInfo = reservationsService.update(res.locals.table.reservation_id, {
     ...seatedReservation,
     status: "finished",
   });
   res.json({ tableInfo });
-  res.json({ resoInto });
+  // res.json({ resoInto });
 }
 module.exports = {
   create: [

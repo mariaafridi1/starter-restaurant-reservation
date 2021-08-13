@@ -38,19 +38,18 @@ function create(reservation) {
 }
 
 function update(reservation_id, data) {
-  if (typeof data === "string") {
-    return knex(tableName)
-      .update("status", data)
-      .where({ reservation_id })
-      .returning("*")
-      .then((updatedRecords) => updatedRecords[0]);
-  } else {
-    return knex(tableName)
-      .update(data)
-      .where({ reservation_id })
-      .returning("*")
-      .then((updatedRecords) => updatedRecords[0]);
-  }
+  // if (typeof data === "string") {
+  //   return knex(tableName)
+  //     .update("status", data)
+  //     .where({ reservation_id })
+  //     .returning("*")
+  //     .then((updatedRecords) => updatedRecords[0]);
+  // } else {
+  return knex(tableName)
+    .update(data)
+    .where({ reservation_id })
+    .returning("*")
+    .then((updatedRecords) => updatedRecords[0]);
 }
 
 module.exports = {
