@@ -26,12 +26,12 @@ export default function TablesForm({ setTables }) {
     event.preventDefault();
     event.stopPropagation();
 
-    // if (validateFields()) {
-    //   await createTable(formData, abortController.signal);
-    //   await listTables(abortController.signal).then(setTables);
-    //   history.push(`/dashboard`);
-    //   return () => abortController.abort();
-    // }
+    if (validateFields()) {
+      await createTable(formData, abortController.signal);
+      await listTables(abortController.signal).then(setTables);
+      history.push(`/dashboard`);
+      return () => abortController.abort();
+    }
   };
 
   const validateFields = () => {

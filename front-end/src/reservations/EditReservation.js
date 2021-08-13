@@ -50,6 +50,7 @@ const EditReservation = () => {
     <main>
       <h1>Edit Existing Reservation #{reservation.reservation_id}</h1>
       <ErrorAlert error={reservationError} />
+      {child}
     </main>
   );
 };

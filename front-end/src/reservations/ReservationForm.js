@@ -8,6 +8,7 @@ const ReservationForm = ({
   reservation,
   setReservation,
 }) => {
+  console.log(reservation, `!!!!!!!!!!!!!`);
   const [errors, setErrors] = useState([]);
 
   function changeHandler({ target: { name, value } }) {
@@ -27,13 +28,13 @@ const ReservationForm = ({
 
   function onSubmit(e) {
     e.preventDefault();
-    // e.stopPropagation();
+    e.stopPropagation();
 
-    // const validationErrors = validate(reservation);
+    const validationErrors = validate(reservation);
 
-    // if (validationErrors.length) {
-    //   return setErrors(validationErrors);
-    // }
+    if (validationErrors.length) {
+      return setErrors(validationErrors);
+    }
     submitHandler(reservation);
   }
   return (

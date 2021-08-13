@@ -158,7 +158,7 @@ async function create(req, res) {
 
 async function list(req, res) {
   const date = req.query.date;
-  console.log(date);
+  // //console.log(date);
   const mobile_number = req.query.mobile_number;
   console.log(mobile_number);
   if (date) {
