@@ -6,6 +6,7 @@ import ErrorAlert from "../layout/ErrorAlert";
 const TableDisplay = ({ tables, tablesError }) => {
   const history = useHistory();
   const abortController = new AbortController();
+  console.log(tables);
   //TODO I CANT GET THIS FUNCTION TO WORK
   //! CONSOLE LOG IS ON LINE 49
   const allTables = tables.map((table) => {

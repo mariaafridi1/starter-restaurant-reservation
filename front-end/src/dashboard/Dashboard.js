@@ -18,7 +18,7 @@ function Dashboard({
   tablesError,
 }) {
   const history = useHistory();
-
+  console.log(tables, "!!!!!!!!!");
   return (
     <main>
       <h1>Dashboard</h1>
