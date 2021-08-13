@@ -34,17 +34,17 @@ const hasRequiredProperties = hasProperties("table_name", "capacity");
 function validCreate(req, res, next) {
   const {
     data: { table_name, capacity },
-  } = req.asyncErrorBoundary;
+  } = req.body;
   if (table_name.length < 2) {
     return next({
       status: 400,
-      message: `Table name must be at least 2 characters long.`,
+      message: `table_name.`,
     });
   }
   if (capacity < 1) {
     return next({
       status: 400,
-      message: `Table must have at least 1 person.`,
+      message: `capacity`,
     });
   }
   next();
@@ -81,7 +81,7 @@ function reservationIdExists(req, res, next) {
   }
   next({
     status: 400,
-    message: `Reservation id is missing.`,
+    message: `reservation_id`,
   });
 }
 
@@ -107,7 +107,7 @@ function validUpdate(req, res, next) {
       message: `Table is occupied.`,
     });
   }
-  if (table.capacity < reservation.people) {
+  if (table.capacity < reservations.people) {
     return next({
       status: 400,
       message: `Capacity not large enough to accommodate party size.`,
@@ -126,6 +126,7 @@ function isTableOccupied(req, res, next) {
   });
 }
 //* CRUD
+
 async function create(req, res) {
   const newTable = await tablesService.create(req.body.data);
 
@@ -134,13 +135,18 @@ async function create(req, res) {
   });
 }
 
+// async function list(req, res) {
+//   res.json({ data: await tablesService.list() });
+// }
 async function list(req, res) {
-  res.json({ data: await tablesService.list() });
+  const data = await tablesService.list();
+  res.json({ data });
 }
 
 function read(req, res) {
   res.json({ data: res.locals.table });
 }
+
 async function update(req, res) {
   const updatedTable = {
     ...res.locals.table,

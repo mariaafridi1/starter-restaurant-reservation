@@ -49,11 +49,11 @@ const isValid = (req, res, next) => {
   } = req.body;
   const date = new Date(reservation_date);
   const currentDate = new Date();
-  if (typeof people === "string" && people < 0) {
-    return next({
-      status: 400,
-      message: `people`,
-    });
+
+  if (!people || people < 1) {
+    next({ status: 400, message: "Reservation needs people!" });
+  } else if (typeof req.body.data.people !== "number") {
+    next({ status: 400, message: "people needs to be a number!" });
   }
 
   if (reservation_date.match(/[a-z]/i)) {
@@ -156,31 +156,34 @@ async function create(req, res) {
   });
 }
 
-// async function list(req, res) {
-//   const date = req.query.date;
-//   const mobile_data = req.query.mobile_number;
-//   if (date) {
-//     res.json({
-//       data: await service.list(date),
-//     });
-//   } else if (mobile_number) {
-//     res.json({
-//       data: await service.search(mobile_number),
-//     });
-//   }
-// }
-
 async function list(req, res) {
-  let data;
-
-  if (req.query.date) {
-    data = await service.list(req.query.date);
-  } else if (req.query.mobile_number) {
-    data = await service.search(req.query.mobile_number);
+  const date = req.query.date;
+  console.log(date);
+  const mobile_number = req.query.mobile_number;
+  console.log(mobile_number);
+  if (date) {
+    const data = await service.list(date);
+    res.json({
+      data,
+    });
+  } else if (mobile_number) {
+    res.json({
+      data: await service.search(mobile_number),
+    });
   }
-
-  res.json({ data });
 }
+
+// async function list(req, res) {
+//   let data;
+
+//   if (req.query.date) {
+//     data = await service.list(req.query.date);
+//   } else if (req.query.mobile_number) {
+//     data = await service.search(req.query.mobile_number);
+//   }
+
+//   res.json({ data });
+// }
 
 function read(req, res) {
   res.json({ data: res.locals.reservation });
@@ -199,7 +202,7 @@ module.exports = {
     isValid,
     asyncErrorBoundary(create),
   ],
-  list: asyncErrorBoundary(list),
+  list: [asyncErrorBoundary(list)],
   read: [asyncErrorBoundary(reservationExists), read],
   update: [
     asyncErrorBoundary(reservationExists),

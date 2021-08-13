@@ -4,7 +4,7 @@ import { freeTable } from "../utils/api";
 import ErrorAlert from "../layout/ErrorAlert";
 
 const TableDisplay = ({ tables, tablesError }) => {
-  const history = useHistory;
+  const history = useHistory();
   const abortController = new AbortController();
 
   const allTables = tables.map((table) => {
@@ -13,7 +13,7 @@ const TableDisplay = ({ tables, tablesError }) => {
       e.preventDefault();
       e.stopPropagation();
       await freeTable(table_id, abortController.signal);
-      history.toString(0);
+      history.go(0);
       return () => abortController.abort();
     };
     return (

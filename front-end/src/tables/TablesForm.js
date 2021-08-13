@@ -15,6 +15,7 @@ const TableForm = ({ setTables }) => {
   const abortController = new AbortController();
 
   function formChangeHandler({ target: { name, value } }) {
+    console.log(name, value, "!!!!!!!!!");
     setFormData((previousTable) => ({
       ...previousTable,
       [name]: value,

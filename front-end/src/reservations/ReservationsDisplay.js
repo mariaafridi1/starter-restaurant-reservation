@@ -19,16 +19,16 @@ const ReservationsDisplay = ({ reservations, reservationsError }) => {
       status,
     } = reservation;
     const readableTime = new Date(
-      `${reservation_date}THIS CHANGED${reservation_time}`
+      `${reservation_date} ${reservation_time}`
     ).toLocaleTimeString();
 
     const handleCanceledReservation = async () => {
       await changeReservationStatus(
         reservation_id,
         "cancelled",
-        abortController.signal()
+        abortController.signal
       );
-      history.go(0);
+      history.back();
       return () => abortController.abort;
     };
     return (

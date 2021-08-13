@@ -5,16 +5,9 @@ import ValidateErrors from "./ValidationErrors";
 const ReservationForm = ({
   submitHandler,
   cancelHandler,
-  initialState = {
-    first_name: "",
-    last_name: "",
-    mobile_number: "",
-    reservation_date: "",
-    reservation_time: "",
-    people: "",
-  },
+  reservation,
+  setReservation,
 }) => {
-  const [reservation, setReservation] = useState(initialState);
   const [errors, setErrors] = useState([]);
 
   function changeHandler({ target: { name, value } }) {
@@ -25,19 +18,26 @@ const ReservationForm = ({
     }));
   }
 
+  function numberChangeHandler({ target: { name, value } }) {
+    setReservation((previousReservation) => ({
+      ...previousReservation,
+      [name]: Number(value),
+    }));
+  }
+
   function onSubmit(e) {
     e.preventDefault();
-    e.stopPropagation();
+    // e.stopPropagation();
 
-    const validationErrors = validate(reservation);
+    // const validationErrors = validate(reservation);
 
-    if (validationErrors.length) {
-      return setErrors(validationErrors);
-    }
+    // if (validationErrors.length) {
+    //   return setErrors(validationErrors);
+    // }
     submitHandler(reservation);
   }
   return (
-    <form onSubmit={onSubmit}>
+    <form onSubmit={submitHandler}>
       <validationErrors errors={errors} />
       <fieldset>
         <div className="row mb-3">
@@ -136,7 +136,7 @@ const ReservationForm = ({
               min="1"
               aria-label="Number of people"
               value={reservation.people}
-              onChange={changeHandler}
+              onChange={numberChangeHandler}
               required
             />
           </div>

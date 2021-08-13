@@ -6,7 +6,7 @@ function convertTimeToMin(time) {
 }
 
 function isFutureDate({ reservation_date, reservation_time }) {
-  if (new Date(`${reservation_date}T${reservation_time}`) < new Date()) {
+  if (new Date(`${reservation_date}T${reservation_time}`) <= new Date()) {
     return new Error("Reservation date/time must be a future date");
   }
 }
