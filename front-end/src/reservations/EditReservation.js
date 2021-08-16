@@ -6,7 +6,7 @@ import { readReservation, updateReservation } from "../utils/api";
 
 function EditReservation() {
   const { reservation_id } = useParams();
-  console.log(reservation_id, `INSIDE EDIT RESERVATION`);
+  //!console.log(reservation_id, `INSIDE EDIT RESERVATION`);
   const history = useHistory();
 
   const initialFormState = {
@@ -153,7 +153,7 @@ function EditReservation() {
 
     if (errors.length === 0) {
       const abortController = new AbortController();
-      console.log(formData, `!!!!!!!!!!!!!!!!`);
+      //!console.log(formData, `!!!!!!!!!!!!!!!!`);
       updateReservation({ reservation_id, ...formData }, abortController.signal)
         .then(() =>
           history.push(`/dashboard/?date=${formData.reservation_date}`)

@@ -36,7 +36,7 @@ function create(reservation) {
     .returning("*")
     .then((createdRecords) => createdRecords[0]);
 }
-
+//!!!!!!!!!!!!!!!!!!!! user story 6 wont pass 3 tests 200 for booked, finished seated?
 function update(reservation_id, data) {
   // if (typeof data === "string") {
   //   return knex(tableName)

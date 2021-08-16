@@ -3,7 +3,11 @@ import { useHistory } from "react-router-dom";
 import { changeReservationStatus } from "../utils/api";
 import ErrorAlert from "../layout/ErrorAlert";
 
-const ReservationsDisplay = ({ reservations, reservationsError }) => {
+const ReservationsDisplay = ({
+  reservations,
+  reservationsError,
+  loadDashboard,
+}) => {
   const history = useHistory;
   const abortController = new AbortController();
 
@@ -21,15 +25,16 @@ const ReservationsDisplay = ({ reservations, reservationsError }) => {
     const readableTime = new Date(
       `${reservation_date} ${reservation_time}`
     ).toLocaleTimeString();
-
+    //!!!!!!!!!!!!!!!!!!!!!  RESERVATION IS NOT REMOVED AFTER CLICKING OK US4
     const handleCanceledReservation = async () => {
       const result = await changeReservationStatus(
         reservation_id,
         "cancelled",
         abortController.signal
       );
-      console.log(result, `LAST TEST`);
-      history.back();
+      await loadDashboard();
+      // console.log(result, `LAST TEST`);
+      // history.back();
       // return () => abortController.abort;
     };
     return (

@@ -48,7 +48,14 @@ const isValid = (req, res, next) => {
   const {
     data: { reservation_date, reservation_time, people, status },
   } = req.body;
-  const date = new Date(reservation_date);
+
+  // if (!data) {
+  //   next({
+  //     status: 400,
+  //     message: `No data found`,
+  //   });
+  // }
+  const reservationDate = new Date(reservation_date);
   const currentDate = new Date();
 
   if (!people || people < 1) {
@@ -70,11 +77,8 @@ const isValid = (req, res, next) => {
       message: `reservation_time`,
     });
   }
-
-  if (
-    date.valueOf() < currentDate.valueOf() &&
-    date.toUTCString().slice(0, 16)
-  ) {
+  //! CANNOT MAKE RESERVATIONS FOR THE DAY OF AND THE DAY AFTER
+  if (reservationDate.valueOf() < currentDate.valueOf()) {
     return next({
       status: 400,
       message: `Reservations must be made in the future!`,
@@ -103,28 +107,28 @@ const isValid = (req, res, next) => {
 
 //* MIDDLEWARE
 async function reservationExists(req, res, next) {
-  console.log(req.params.reservation_id, `reservation_id`);
+  //!console.log(req.params.reservation_id, `reservation_id`);
   const reservation = await service.read(req.params.reservation_id);
-  console.log(`RESERVATION INSIDE FUNCTION`);
+  //!console.log(`RESERVATION INSIDE FUNCTION`);
   if (reservation) {
-    console.log(`INSIDE IF STATEMENT`);
+    //!console.log(`INSIDE IF STATEMENT`);
     res.locals.reservation = reservation;
-    console.log(`AFTER RES.LOCALS`);
+    //!console.log(`AFTER RES.LOCALS`);
     return next();
   }
-  console.log(`AFTER LINE 112`);
+  //!console.log(`AFTER LINE 112`);
   next({
     status: 404,
     message: `Reservation ${req.params.reservation_id} cannot be found.`,
   });
 }
-
+//!!!!!!!!!!!!!!!!!!!! user story 6 wont pass 3 tests 200 for booked, finished seated?
 const validStatusUpdate = (req, res, next) => {
   console.log(`START OF VALIDSTATUSUPDATE FUNCTION`);
   const {
     data: { status },
   } = req.body;
-  console.log(res.locals, `RES.LOCALS INSIDE FUNCTION`);
+  //!console.log(res.locals, `RES.LOCALS INSIDE FUNCTION`);
   const { reservation } = res.locals;
 
   if (reservation.status === "finished") {
@@ -144,7 +148,7 @@ const validStatusUpdate = (req, res, next) => {
   }
   next();
 };
-
+//!!!!!!!!!!!!!!!!!!!! user story 6 wont pass 3 tests 200 for booked, finished seated?
 async function updateStatus(req, res) {
   console.log(res.locals.reservation, `res.locals.reservation`);
   const updatedReservation = {
@@ -155,12 +159,8 @@ async function updateStatus(req, res) {
     res.locals.reservation.reservation_id,
     updatedReservation
   );
-  console.log(data, `last test looking for data`);
-  //res.setHeader("Location", "http://localhost:5000/reservations?date=");
-  res.redirect(
-    "http://localhost:5000/dashboard?date=" +
-      formatReservationDate(res.locals.reservation.reservation_date)
-  );
+  console.log(data, ` !!!!!!!!!!!!!!!!!!!! USER STORY 6`);
+
   res.json({ data });
 }
 
@@ -178,7 +178,7 @@ async function list(req, res) {
   const date = req.query.date;
   // //console.log(date);
   const mobile_number = req.query.mobile_number;
-  // console.log(mobile_number, `THIS IS MOBILE NUMBER!!!!!!!`);
+  //! console.log(mobile_number, `THIS IS MOBILE NUMBER!!!!!!!`);
   if (date) {
     const data = await service.list(date);
     res.json({

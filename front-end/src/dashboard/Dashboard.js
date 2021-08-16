@@ -16,9 +16,10 @@ function Dashboard({
   reservationsError,
   tables,
   tablesError,
+  loadDashboard,
 }) {
   const history = useHistory();
-  //// console.log(tables, "!!!!!!!!!");
+  //! console.log(tables, "!!!!!!!!!");
   return (
     <main>
       <h1>Dashboard</h1>
@@ -48,6 +49,7 @@ function Dashboard({
       <ReservationsDisplay
         reservations={reservations}
         reservationsError={reservationsError}
+        loadDashboard={loadDashboard}
       />
 
       <h4>Tables</h4>

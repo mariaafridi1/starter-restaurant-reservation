@@ -16,6 +16,12 @@ const VALID_FIELDS = [
 
 function hasOnlyValidProperties(req, res, next) {
   const { data = {} } = req.body;
+  if (!data) {
+    return next({
+      status: 400,
+      message: `no data provided`,
+    });
+  }
 
   const invalidFields = Object.keys(data).filter((field) => {
     !VALID_FIELDS.includes(field);
