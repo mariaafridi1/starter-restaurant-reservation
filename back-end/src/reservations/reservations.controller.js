@@ -123,31 +123,64 @@ async function reservationExists(req, res, next) {
   });
 }
 //!!!!!!!!!!!!!!!!!!!! user story 6 wont pass 3 tests 200 for booked, finished seated?
-const validStatusUpdate = (req, res, next) => {
-  console.log(`START OF VALIDSTATUSUPDATE FUNCTION`);
-  const {
-    data: { status },
-  } = req.body;
-  //!console.log(res.locals, `RES.LOCALS INSIDE FUNCTION`);
-  const { reservation } = res.locals;
+// const validStatusUpdate = (req, res, next) => {
+//   const {
+//     data: { status },
+//   } = req.body;
 
-  if (reservation.status === "finished") {
+//   const { reservation } = res.locals;
+
+//   if (reservation.status === "finished") {
+//     return next({
+//       status: 400,
+//       message: `A finished reservation cannot be updated.`,
+//     });
+//   }
+
+//   if (status === "cancelled") return next();
+
+//   if (status !== "booked" && (status !== "seated") !== "finished") {
+//     return next({
+//       status: 400,
+//       message: `Cannot update unknown status`,
+//     });
+//   }
+//   next();
+// };
+const statusIsKnown = (req, res, next) => {
+  const { status } = req.body.data;
+
+  if (
+    status === "booked" ||
+    status === "seated" ||
+    status === "finished" ||
+    status === "cancelled"
+  ) {
+    return next();
+  }
+  next({
+    status: 400,
+    message: `Reservation status is unknown, status should be "booked, 'seated', or 'finished'.`,
+  });
+};
+const statusIsFinishedOrCancelled = (req, res, next) => {
+  const { status } = res.locals.reservation;
+
+  if (status === "finished") {
     return next({
       status: 400,
-      message: `A finished reservation cannot be updated.`,
+      message: `Status is "finished".`,
     });
   }
-
-  if (status === "cancelled") return next();
-
-  if (status !== "booked" && (status !== "seated") !== "finished") {
+  if (status === "cancelled") {
     return next({
       status: 400,
-      message: `Cannot update unknown status`,
+      message: `Status is "cancelled".`,
     });
   }
   next();
 };
+
 //!!!!!!!!!!!!!!!!!!!! user story 6 wont pass 3 tests 200 for booked, finished seated?
 async function updateStatus(req, res) {
   console.log(res.locals.reservation, `res.locals.reservation`);
@@ -232,7 +265,9 @@ module.exports = {
   ],
   updateStatus: [
     asyncErrorBoundary(reservationExists),
-    validStatusUpdate,
+    // validStatusUpdate,
+    statusIsKnown,
+    statusIsFinishedOrCancelled,
     asyncErrorBoundary(updateStatus),
   ],
 };
