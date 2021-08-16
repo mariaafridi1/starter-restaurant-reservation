@@ -25,7 +25,7 @@ const ReservationsDisplay = ({
     const readableTime = new Date(
       `${reservation_date} ${reservation_time}`
     ).toLocaleTimeString();
-    //!!!!!!!!!!!!!!!!!!!!!  RESERVATION IS NOT REMOVED AFTER CLICKING OK US4
+
     const handleCanceledReservation = async () => {
       const result = await changeReservationStatus(
         reservation_id,
@@ -33,9 +33,6 @@ const ReservationsDisplay = ({
         abortController.signal
       );
       await loadDashboard();
-      // console.log(result, `LAST TEST`);
-      // history.back();
-      // return () => abortController.abort;
     };
     return (
       <tr key={reservation_id}>

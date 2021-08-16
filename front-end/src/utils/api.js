@@ -132,9 +132,8 @@ export async function changeReservationStatus(
     method: "PUT",
     headers,
     body: JSON.stringify({ data: { status: newStatus } }),
-    //   signal,
   };
-  // console.log(url, `!!!!!!!!!!!!!!!!!!!!`);
+
   return await fetchJson(url, options, newStatus);
 }
 

@@ -120,7 +120,6 @@ async function reservationExists(req, res, next) {
 }
 
 function validUpdate(req, res, next) {
-  //!console.log(res.locals, `INSIDE FUNCTION VALIDUPDATE`);
   const { table, reservation } = res.locals;
   if (table.reservation_id) {
     return next({
@@ -143,28 +142,24 @@ function validUpdate(req, res, next) {
   next();
 }
 async function update(req, res) {
-  //!console.log(`WE GOT HERE`);
   const updatedTable = {
     ...res.locals.table,
     reservation_id: res.locals.reservation.reservation_id,
   };
-  //!console.log(`MIDDLE OF FUNCTION`);
+
   const updatedReservation = {
     ...res.locals.reservation,
     status: "seated",
   };
-  //!console.log(`LINE 150!!!!!!!`);
+
   const tableInfo = await tablesService.update(updatedTable);
-  //!console.log(`LINE 152`, updatedReservation);
+
   const resoInfo = await reservationsService.update(
     res.locals.reservation.reservation_id,
     updatedReservation
   );
-  //!console.log(`LINE 154`);
+
   res.json({ tableInfo });
-  //! console.log(`LINE 156`);
-  // res.json({ resoInto });
-  //!console.log(`LINE 158`);
 }
 
 function isTableOccupied(req, res, next) {

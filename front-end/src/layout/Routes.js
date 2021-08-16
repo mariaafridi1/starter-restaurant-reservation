@@ -21,8 +21,7 @@ import useQuery from "../utils/useQuery";
 function Routes() {
   const query = useQuery();
   const date = query.get("date") || today();
-  //!!!!! CONSOLE LOG
-  //! console.log(date);
+ 
   const [reservations, setReservations] = useState([]);
   const [reservationsError, setReservationsError] = useState(null);
   const [tables, setTables] = useState([]);

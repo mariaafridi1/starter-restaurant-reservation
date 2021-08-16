@@ -49,12 +49,6 @@ const isValid = (req, res, next) => {
     data: { reservation_date, reservation_time, people, status },
   } = req.body;
 
-  // if (!data) {
-  //   next({
-  //     status: 400,
-  //     message: `No data found`,
-  //   });
-  // }
   const reservationDate = new Date(reservation_date);
   const currentDate = new Date();
 
@@ -77,7 +71,7 @@ const isValid = (req, res, next) => {
       message: `reservation_time`,
     });
   }
-  //! CANNOT MAKE RESERVATIONS FOR THE DAY OF AND THE DAY AFTER
+
   if (reservationDate.valueOf() < currentDate.valueOf()) {
     return next({
       status: 400,
@@ -107,22 +101,20 @@ const isValid = (req, res, next) => {
 
 //* MIDDLEWARE
 async function reservationExists(req, res, next) {
-  //!console.log(req.params.reservation_id, `reservation_id`);
   const reservation = await service.read(req.params.reservation_id);
-  //!console.log(`RESERVATION INSIDE FUNCTION`);
+
   if (reservation) {
-    //!console.log(`INSIDE IF STATEMENT`);
     res.locals.reservation = reservation;
-    //!console.log(`AFTER RES.LOCALS`);
+
     return next();
   }
-  //!console.log(`AFTER LINE 112`);
+
   next({
     status: 404,
     message: `Reservation ${req.params.reservation_id} cannot be found.`,
   });
 }
-//!!!!!!!!!!!!!!!!!!!! user story 6 wont pass 3 tests 200 for booked, finished seated?
+
 // const validStatusUpdate = (req, res, next) => {
 //   const {
 //     data: { status },
@@ -181,9 +173,7 @@ const statusIsFinishedOrCancelled = (req, res, next) => {
   next();
 };
 
-//!!!!!!!!!!!!!!!!!!!! user story 6 wont pass 3 tests 200 for booked, finished seated?
 async function updateStatus(req, res) {
-  console.log(res.locals.reservation, `res.locals.reservation`);
   const updatedReservation = {
     ...res.locals.reservation,
     status: req.body.data.status,
@@ -192,7 +182,6 @@ async function updateStatus(req, res) {
     res.locals.reservation.reservation_id,
     updatedReservation
   );
-  console.log(data, ` !!!!!!!!!!!!!!!!!!!! USER STORY 6`);
 
   res.json({ data });
 }
@@ -209,9 +198,9 @@ async function create(req, res) {
 
 async function list(req, res) {
   const date = req.query.date;
-  // //console.log(date);
+
   const mobile_number = req.query.mobile_number;
-  //! console.log(mobile_number, `THIS IS MOBILE NUMBER!!!!!!!`);
+
   if (date) {
     const data = await service.list(date);
     res.json({

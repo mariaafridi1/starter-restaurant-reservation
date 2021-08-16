@@ -8,11 +8,11 @@ const ReservationForm = ({
   reservation,
   setReservation,
 }) => {
-  //!console.log(reservation, `!!!!!!!!!!!!!`);
+
   const [errors, setErrors] = useState([]);
 
   function changeHandler({ target: { name, value } }) {
-    //!console.log(value);
+   
     setReservation((previousReservation) => ({
       ...previousReservation,
       [name]: value,

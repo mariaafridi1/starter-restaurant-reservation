@@ -6,7 +6,7 @@ import { readReservation, updateReservation } from "../utils/api";
 
 function EditReservation() {
   const { reservation_id } = useParams();
-  //!console.log(reservation_id, `INSIDE EDIT RESERVATION`);
+
   const history = useHistory();
 
   const initialFormState = {
@@ -143,7 +143,6 @@ function EditReservation() {
   //   }
   // };
 
-  //! OPTION TWO -
   const handleFormSubmit = (event) => {
     event.preventDefault();
 
@@ -153,7 +152,7 @@ function EditReservation() {
 
     if (errors.length === 0) {
       const abortController = new AbortController();
-      //!console.log(formData, `!!!!!!!!!!!!!!!!`);
+
       updateReservation({ reservation_id, ...formData }, abortController.signal)
         .then(() =>
           history.push(`/dashboard/?date=${formData.reservation_date}`)
@@ -163,21 +162,6 @@ function EditReservation() {
         });
     }
   };
-
-  //! OPTION THREE -
-  // export async function updateReservation(reservation_id, data) {
-  //   const url = new URL(`${API_BASE_URL}/reservations/${reservation_id}`);
-
-  //   return await fetchJson(
-  //     url,
-  //     {
-  //       headers,
-  //       method: "PUT",
-  //       body: JSON.stringify({ data }),
-  //     },
-  //     []
-  //   );
-  // }
 
   const handleCancelButton = () => {
     history.goBack();

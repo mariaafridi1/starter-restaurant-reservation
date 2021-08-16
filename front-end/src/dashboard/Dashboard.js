@@ -19,7 +19,7 @@ function Dashboard({
   loadDashboard,
 }) {
   const history = useHistory();
-  //! console.log(tables, "!!!!!!!!!");
+
   return (
     <main>
       <h1>Dashboard</h1>
